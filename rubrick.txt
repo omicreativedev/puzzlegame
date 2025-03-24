@@ -1,0 +1,49 @@
+The Big Project
+
+Goals:
+1.	For you to have an opportunity to have fun and to exercise your creativity.
+
+2.	For you to expand your tool-kit by learning something new , but related to what we have already learned, on your own.
+
+3.	For you to pull together many of the techniques and technologies we have been learning.
+
+4.	To make the project of a small and mangeable size.
+
+
+Criteria:
+1.	The project may be as small as one page and may be on any topic.
+
+2.	It should be fun for the user.
+
+3.	It must make use of all of the following:
+a.	html5
+b.	css3
+c.	JavaScript
+d.	jQuery 
+e.	a jQuery plug-in
+
+
+4.	It must involve you using at least 4  of the following (most of which are new to you):
+a.	Embedding a video or audio file
+b.	An animation
+c.	The canvas element of HTML5
+d.	Ajax
+e.	Responsive web design
+f.	Other parts of JQuery we haven’t used with prior approval
+g.	z-index of CSS with prior approval and if it is genuinely new to you
+h.	transparency with prior approval and if it is genuinely new to you
+i.	Another new technique with prior approval
+
+5.	Everyone on the team has to learn at least two new technologies, and the team has to provide a list of 3 -5 sources of information on the new topics.  
+
+Everyone on the team has to do some serious coding.
+
+I want you to ‘blue sky’ some ideas today.
+
+Example – although this may be too ambitious:
+Invite a Simmons applicant to construct her own dorm room by using images of dorm rooms from the Simmons web site (I think I have some photos of unfurrnished rooms) and allowing her to drag onto the the room photos / images of posters, quilts, computers, Simmons banner, etc.  Of course, ideally, she would want to save the result (& the Admissions Office would want to know she had particpiated.)  Uses RWD, draggable images, z-index and could use various plug-ins for RWD.  
+
+Past students have done games, puzzles, write-your-own-ending books, as well as sites focusing on a particular topic.
+
+Your grade for the project will depend partially on how ambitious your project is, as well as how many new technologies you have incorporated.
+
