@@ -1,0 +1,26 @@
+HTML5: The code starts with <!DOCTYPE html> (line 1), uses <canvas id="puzzle-canvas"></canvas> (line 134) for rendering the puzzle image, and includes <audio id="background-music"></audio> (line 141) for sound. These elements are part of HTML5’s expanded capabilities over previous versions. HTML5 provides the modern structure and multimedia features, enabling dynamic graphics and audio integration that make the game interactive and engaging.
+
+CSS3: Examples include box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); (line 35) for shadows, border-radius: 5px; (line 34) for rounded corners, transition: opacity 0.3s; (line 76) for smooth animations, and @media (max-width: 600px) (line 103) for responsive design. CSS3 enhances the game’s visual appeal with modern styling and animations while adapting the layout to different screen sizes. It elevates the user experience beyond basic CSS capabilities.
+
+JavaScript: The <script> block (lines 148–314) contains logic like img = new Image(); img.src = imageSrc; (line 219) to load images and setInterval(() => { ... }, 1000); (line 281) to update the timer. JavaScript powers the game’s core functionality, managing puzzle initialization, piece movement, and solution checking. It’s the backbone of the game’s interactivity and logic.
+
+jQuery: The code loads jQuery with <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> (line 7) and uses it in $(document).ready(function () { ... }); (line 149), $('#start-game').click(function () { ... }); (line 159), and pieces.forEach(piece => { piece.css({ ... }); }); (line 198). jQuery simplifies DOM manipulation and event handling, making the code more concise. It streamlines complex operations into shorter, readable commands.
+
+jQuery Plugin (jQuery UI): Loaded via <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script> (line 8), it’s used in piece.draggable({ containment: 'window', start: ..., stop: ... }); (line 260) and slot.droppable({ accept: '.puzzle-piece', drop: ... }); (line 270). The jQuery UI plugin adds drag-and-drop functionality to puzzle pieces and slots. This enables intuitive user interaction critical to the game’s mechanics.
+
+Audio: The <audio id="background-music"></audio> element (line 141) is controlled by music.src = musicChoice; (line 175), music.play(); (line 283), music.pause(); (line 296), and the toggleMusic() function (line 208). Audio provides background music options to enhance the game’s atmosphere. It’s controlled dynamically to match user preferences and game state.
+
+Canvas Element: Defined as <canvas id="puzzle-canvas"></canvas> (line 134), it’s manipulated with const ctx = canvas.getContext('2d'); (line 155) and ctx.drawImage(img, 0, 0, canvas.width, canvas.height); (line 225). The canvas displays a semi-transparent guide image of the completed puzzle. It aids players in solving the puzzle by providing a visual reference.
+
+Responsive Design: Implemented with @media (max-width: 600px) { #game-container { width: 300px; height: 300px; } ... } (line 103), pieceSize = window.matchMedia('(max-width: 600px)').matches ? 100 : 150; (line 169), and $(window).resize(function () { ... }); (line 308). This ensures the game adapts to different screen sizes, resizing the puzzle and logo dynamically. It makes the game playable on both desktop and mobile devices.
+
+Z-Index: Used in #puzzle-canvas { z-index: 1; } (line 65), #puzzle-grid { z-index: 2; } (line 70), and .puzzle-piece { z-index: 10; } (line 77). Z-index controls the stacking order of elements, placing pieces above the grid and canvas. This ensures proper layering for interaction and visibility during gameplay.
+
+Transparency: Applied with #puzzle-canvas { opacity: 0.5; } (line 64), .dragging { opacity: 0.8; } (line 82), and transition: opacity 0.3s; (line 76). Transparency makes the canvas a subtle guide and provides visual feedback when dragging pieces. It enhances usability by distinguishing interactive states.
+
+DOM Manipulation: Examples include $('#puzzle-grid').empty(); (line 221) to clear the grid before rebuilding it, $('#game-container').append(piece); (line 235) to add puzzle pieces dynamically, and piece.appendTo('body'); (line 248) to move pieces outside the container when scattering. DOM manipulation allows the game to create, remove, and reposition elements as needed. It’s essential for setting up and resetting the puzzle dynamically.
+
+Attribute Handling: Seen in piece.attr('data-correct-pos', ${r}${c}); (line 236) and piece.attr('data-current-pos', ${r}${c}); (line 236) to set initial positions, and piece.attr('data-current-pos', null); (line 255) to clear positions when scattering. Attribute handling tracks the state of puzzle pieces using custom data attributes. This enables the game to compare current and correct positions for solution checking.
+
+Dynamic Styling: Demonstrated by $('#puzzle-grid').css({ 'grid-template-columns': repeat(${cols}, 1fr), 'grid-template-rows': repeat(${rows}, 1fr) }); (line 171) to set the grid layout and piece.css({ width: pieceSize, height: pieceSize, ... }); (line 198) to resize pieces responsively. Dynamic styling adjusts element styles based on game state or screen size. It ensures the puzzle grid and pieces adapt to user selections and device constraints.
+
