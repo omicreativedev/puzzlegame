@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Jigsaw Puzzle Game</title>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+	<style>
+		body {
+			text-align: center;
+			font-family: Arial, sans-serif;
+			background-color: #f4f4f4;
+			margin: 0;
+			padding: 0;
+		}
+
+		#start-screen {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			height: 100vh;
+			background-color: #f0f0f0;
+		}
+
+		#parameter-console {
+			background: white;
+			padding: 20px;
+			border-radius: 5px;
+			box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+		}
+
+		.input-group {
+			margin: 10px 0;
+		}
+
+		label {
+			display: block;
+			margin-bottom: 5px;
+		}
+
+		input,
+		select {
+			width: 200px;
+			padding: 5px;
+			border: 1px solid #ddd;
+			border-radius: 3px;
+		}
+
+		#game-screen {
+			display: none;
+		}
+
+		#game-container {
+			position: relative;
+			width: 450px;
+			height: 450px;
+			margin: 20px auto;
+			border: 2px solid #000;
+			background: #fff;
+			overflow: hidden;
+		}
+
+		#puzzle-canvas {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			opacity: 0.5;
+			z-index: 1;
+		}
+
+		#puzzle-grid {
+			position: absolute;
+			width: 100%;
+			height: 100%;
+			display: grid;
+			gap: 1px;
+			z-index: 2;
+		}
+
+		.puzzle-slot {
+			border: 1px solid #000;
+			box-sizing: border-box;
+		}
+
+		.puzzle-piece {
+			position: absolute;
+			border: 1px solid #000;
+			cursor: grab;
+			background-size: 450px 450px;
+			transition: opacity 0.3s;
+			z-index: 10;
+		}
+
+		.dragging {
+			opacity: 0.8;
+		}
+
+		#timer {
+			font-size: 24px;
+			margin: 10px;
+		}
+
+		#controls {
+			margin-top: 20px;
+		}
+
+		button {
+			padding: 10px 20px;
+			font-size: 18px;
+			margin: 5px;
+			cursor: pointer;
+			background: #4CAF50;
+			color: white;
+			border: none;
+			border-radius: 3px;
+		}
+
+		button:hover {
+			background: #45a049;
+		}
+
+		#logo {
+			display: block;
+		}
+
+		.logo {
+			width: 450px;
+		}
+
+		@media (max-width: 600px) {
+			#game-container {
+				width: 300px;
+				height: 300px;
+			}
+
+			.logo {
+				width: 225px;
+			}
+		}
+	</style>
+
+</head>
+
+<body>
+	<div id="start-screen">
+
+
+		<div id="parameter-console">
+			<div id="logo"><img class="logo" src="logo.png"></div>
+			<div class="input-group">
+				<label for="name">What is your name?</label>
+				<input type="text" id="name" name="name">
+			</div>
+			<div class="input-group">
+				<label for="puzzle-size">Choose puzzle size:</label>
+				<select id="puzzle-size">
+					<option value="3x3">3x3 Puzzle</option>
+					<option value="6x6">6x6 Puzzle</option>
+				</select>
+			</div>
+			<div class="input-group">
+				<label for="music-choice">Choose background music:</label>
+				<select id="music-choice">
+					<option value="game.mp3">Game Music</option>
+					<option value="music.mp3">Fun Music</option>
+				</select>
+			</div>
+			<div class="input-group">
+				<label for="image-choice">Choose puzzle image:</label>
+				<select id="image-choice">
+					<option value="puppy.png">Puppy</option>
+					<option value="panda.png">Panda</option>
+					<option value="unicorn.png">Unicorn</option>
+				</select>
+			</div>
+			<button id="start-game">Start Game</button>
+		</div>
+	</div>
+
+
+	<div id="game-screen">
+		<div id="logo"><img class="logo" src="logo.png"></div>
+		<div id="timer">Time: 0s</div>
+		<div id="game-container">
+			<canvas id="puzzle-canvas"></canvas>
+			<div id="puzzle-grid"></div>
+		</div>
+		<div id="controls">
+			<button id="save-btn">Start Game</button>
+			<button id="quit-btn">Quit</button>
+			<button id="on-off">Turn Music On</button>
+			<audio id="background-music"></audio>
+		</div>
+	</div>
+
+	<script>
+		$(document).ready(function () {
+			let rows, cols, pieceSize;
+			let pieces = [], slots = [], startTime, timer;
+			let gameStarted = false;
+			let playerName = '';
+			const canvas = $('#puzzle-canvas')[0];
+			const ctx = canvas.getContext('2d');
+			let img;
+			let music = $('#background-music')[0];
+			let containerOffset;
+
+			$('#start-game').click(function () {
+				playerName = $('#name').val().trim();
+				const puzzleSize = $('#puzzle-size').val();
+				const musicChoice = $('#music-choice').val();
+				const imageChoice = $('#image-choice').val();
+
+				if (!playerName) {
+					alert('Please enter your name');
+					return;
+				}
+
+				// Game parameters
+				if (puzzleSize === '3x3') {
+					rows = 3;
+					cols = 3;
+					pieceSize = window.matchMedia('(max-width: 600px)').matches ? 100 : 150;
+				} else {
+					rows = 6;
+					cols = 6;
+					pieceSize = window.matchMedia('(max-width: 600px)').matches ? 50 : 75;
+				}
+
+				$('#puzzle-grid').css({
+					'grid-template-columns': `repeat(${cols}, 1fr)`,
+					'grid-template-rows': `repeat(${rows}, 1fr)`
+				});
+
+				music.src = musicChoice;
+				containerOffset = $('#game-container').offset();
+
+				$('#start-screen').hide();
+				$('#game-screen').css('display', 'block');
+				loadPuzzle(imageChoice);
+			});
+
+			function updatePieceSize() {
+				const mediaQuery = window.matchMedia('(max-width: 600px)');
+				if (rows === 3) {
+					pieceSize = mediaQuery.matches ? 100 : 150;
+				} else {
+					pieceSize = mediaQuery.matches ? 50 : 75;
+				}
+				containerOffset = $('#game-container').offset();
+			}
+
+			function resizeCanvas() {
+				updatePieceSize();
+				canvas.width = $('#game-container').width();
+				canvas.height = $('#game-container').height();
+				if (img) {
+					ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+				}
+				repositionPieces();
+			}
+
+			function repositionPieces() {
+				pieces.forEach(piece => {
+					const correctPos = piece.attr('data-correct-pos');
+					const [row, col] = correctPos.split('_').map(Number);
+					const currentPos = piece.attr('data-current-pos');
+
+					piece.css({
+						width: pieceSize,
+						height: pieceSize,
+						backgroundPosition: `-${col * pieceSize}px -${row * pieceSize}px`,
+						backgroundSize: `${$('#game-container').width()}px ${$('#game-container').height()}px`
+					});
+
+					if (currentPos) {
+						const slot = slots.find(s => s.attr('data-pos') === currentPos);
+						if (slot) {
+							const slotOffset = slot.position();
+							piece.css({
+								left: containerOffset.left + slotOffset.left,
+								top: containerOffset.top + slotOffset.top
+							});
+						}
+					}
+				});
+			}
+
+			function toggleMusic() {
+				if (music.paused) {
+					music.play();
+					$('#on-off').text('Turn Music Off');
+				} else {
+					music.pause();
+					$('#on-off').text('Turn Music On');
+				}
+			}
+
+			function loadPuzzle(imageSrc) {
+				updatePieceSize();
+				resizeCanvas();
+
+				img = new Image();
+				img.src = imageSrc;
+				img.onload = function () {
+					$('#puzzle-grid').empty();
+					pieces = [];
+					slots = [];
+					ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+					for (let r = 0; r < rows; r++) {
+						for (let c = 0; c < cols; c++) {
+							const slot = $('<div>').addClass('puzzle-slot')
+								.attr('data-pos', `${r}_${c}`);
+							$('#puzzle-grid').append(slot);
+							slots.push(slot);
+
+							const piece = $('<div>').addClass('puzzle-piece').css({
+								backgroundImage: `url(${img.src})`,
+								backgroundPosition: `-${c * pieceSize}px -${r * pieceSize}px`,
+								backgroundSize: `${$('#game-container').width()}px ${$('#game-container').height()}px`,
+								left: `${c * pieceSize}px`,
+								top: `${r * pieceSize}px`,
+								width: pieceSize,
+								height: pieceSize
+							}).attr('data-correct-pos', `${r}_${c}`).attr('data-current-pos', `${r}_${c}`);
+							$('#game-container').append(piece);
+							pieces.push(piece);
+						}
+					}
+					makePiecesDraggable();
+					makeSlotsDroppable();
+				};
+			}
+
+			function scatterPieces() {
+				updatePieceSize();
+				const scatterRange = pieceSize;
+				const minX = containerOffset.left - scatterRange;
+				const maxX = containerOffset.left + $('#game-container').width();
+				const minY = containerOffset.top - scatterRange;
+				const maxY = containerOffset.top + $('#game-container').height();
+				const screenWidth = $(window).width() - pieceSize;
+				const screenHeight = $(window).height() - pieceSize;
+
+				pieces.forEach(piece => {
+					piece.appendTo('body');
+					let newLeft, newTop;
+					do {
+						newLeft = Math.floor(Math.random() * (maxX - minX + scatterRange)) + minX - scatterRange;
+						newTop = Math.floor(Math.random() * (maxY - minY + scatterRange)) + minY - scatterRange;
+						newLeft = Math.max(0, Math.min(newLeft, screenWidth));
+						newTop = Math.max(0, Math.min(newTop, screenHeight));
+					} while (
+						newLeft + pieceSize > containerOffset.left && newLeft < containerOffset.left + $('#game-container').width() &&
+						newTop + pieceSize > containerOffset.top && newTop < containerOffset.top + $('#game-container').height()
+					);
+					piece.css({ left: newLeft, top: newTop });
+					piece.attr('data-current-pos', null);
+				});
+			}
+
+			function makePiecesDraggable() {
+				pieces.forEach(piece => {
+					piece.draggable({
+						containment: 'window',
+						start: function () { $(this).addClass('dragging'); },
+						stop: function () { $(this).removeClass('dragging'); }
+					});
+				});
+			}
+
+			function makeSlotsDroppable() {
+				slots.forEach(slot => {
+					slot.droppable({
+						accept: '.puzzle-piece',
+						drop: function (event, ui) {
+							const piece = ui.draggable;
+							const slotPos = $(this).attr('data-pos');
+							updatePieceSize();
+							const slotOffset = $(this).position();
+							piece.css({
+								left: containerOffset.left + slotOffset.left,
+								top: containerOffset.top + slotOffset.top
+							}).attr('data-current-pos', slotPos);
+						}
+					});
+				});
+			}
+
+			function startGame() {
+				if (!gameStarted) {
+					scatterPieces();
+					gameStarted = true;
+					startTime = Date.now();
+					timer = setInterval(() => {
+						$('#timer').text(`Time: ${Math.floor((Date.now() - startTime) / 1000)}s`);
+					}, 1000);
+					$('#save-btn').text('Save');
+					music.play();
+					$('#on-off').text('Turn Music Off');
+				} else {
+					checkSolution();
+				}
+			}
+
+			function checkSolution() {
+				clearInterval(timer);
+				const allCorrect = pieces.every(piece =>
+					piece.attr('data-current-pos') === piece.attr('data-correct-pos')
+				);
+				if (allCorrect) {
+					confetti({
+						particleCount: 100,
+						spread: 70,
+						origin: { y: 0.6 }
+					});
+					setTimeout(() => confetti.reset(), 3000);
+					alert(`Congratulations, ${playerName}! You solved the puzzle correctly!`);
+					music.pause();
+					$('#on-off').text('Turn Music On');
+					gameStarted = false;
+					$('#save-btn').text('Start Game');
+				} else {
+					alert('The puzzle is not assembled correctly. Try again!');
+				}
+			}
+
+			$('#save-btn').click(startGame);
+			$('#quit-btn').click(function () {
+				location.reload();
+			});
+			$('#on-off').click(toggleMusic);
+
+			$(window).resize(function () {
+				updatePieceSize();
+				resizeCanvas();
+				repositionPieces();
+			});
+		});
+	</script>
+</body>
+
+</html>
