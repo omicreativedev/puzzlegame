@@ -5,6 +5,9 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Jigsaw Puzzle Game</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Jersey+10&display=swap" rel="stylesheet">
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -125,11 +128,28 @@
 		}
 
 		#logo {
-			display: block;
+			font-family: "Jersey 10", sans-serif;
+			font-size: 3rem;
+			width: 15.5ch;
+			border-right: 4px solid #333;
+			margin: 0 auto 20px;
+			white-space: nowrap;
+			overflow: hidden;
+			animation: typing 2s steps(14, end), blink-caret 0.5s step-end infinite alternate;
+			text-transform: uppercase;
+			letter-spacing: 2px;
+			color: #FFAE42;
+			;
 		}
 
-		.logo {
-			width: 450px;
+		@keyframes typing {
+			from {
+				width: 0;
+			}
+
+			to {
+				width: 15.5ch;
+			}
 		}
 
 		@media (max-width: 600px) {
@@ -137,21 +157,27 @@
 				width: 300px;
 				height: 300px;
 			}
-
-			.logo {
-				width: 225px;
+			#logo {
+				font-size: 2.25rem;
+				width: 16ch;
+				border-right-width: 2px;
 			}
 		}
+		#background-music::-webkit-media-controls-panel {
+			background-color: #45a049;
+			border-radius: 5px;
+		}
+		#background-music::-webkit-media-controls-play-button {
+			background-color: #b2e9b4;
+			border-radius: 50%;
+		}
 	</style>
-
 </head>
 
 <body>
 	<div id="start-screen">
-
-
 		<div id="parameter-console">
-			<div id="logo"><img class="logo" src="logo.png"></div>
+			<div id="logo">Jigsaw Puzzle</div>
 			<div class="input-group">
 				<label for="name">What is your name?</label>
 				<input type="text" id="name" name="name">
@@ -166,15 +192,17 @@
 			<div class="input-group">
 				<label for="music-choice">Choose background music:</label>
 				<select id="music-choice">
-					<option value="game.mp3">Game Music</option>
-					<option value="music.mp3">Fun Music</option>
+					<option value="68 Gerudo Valley.mp3">Gerudo Valley</option> 
+					<option value="40 Great Fairy's Fountain.mp3">Great Fairy's Fountain</option>
+					<option value="Zelda's Theme.mp3">Zelda's Theme</option>
+					
 				</select>
 			</div>
 			<div class="input-group">
 				<label for="image-choice">Choose puzzle image:</label>
 				<select id="image-choice">
 					<option value="puppy.png">Puppy</option>
-					<option value="panda.png">Panda</option>
+					<option value="pa</div>nda.png">Panda</option>
 					<option value="unicorn.png">Unicorn</option>
 				</select>
 			</div>
@@ -184,7 +212,7 @@
 
 
 	<div id="game-screen">
-		<div id="logo"><img class="logo" src="logo.png"></div>
+		<div id="logo">Jigsaw Puzzle</div>
 		<div id="timer">Time: 0s</div>
 		<div id="game-container">
 			<canvas id="puzzle-canvas"></canvas>
@@ -194,10 +222,17 @@
 			<button id="save-btn">Start Game</button>
 			<button id="quit-btn">Quit</button>
 			<button id="on-off">Turn Music On</button>
-			<audio id="background-music"></audio>
 		</div>
+		<audio controls loop id="background-music">
+			<source src="68 Gerudo Valley.mp3" type="audio/mpeg">
+			<source src="40 Great Fairy's Fountain.mp3" type="audio/mpeg">
+			<source src="Zelda's Theme.mp3" type="audio/mpeg">
+			Your browser does not support the audio element.
+		</audio>
+
 	</div>
 
+	<script></script>
 	<script>
 		$(document).ready(function () {
 			let rows, cols, pieceSize;
